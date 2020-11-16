@@ -119,7 +119,7 @@ def computer_move(board, computer, human):
     board = board[:]
     # поля от лучшего к худшему
     BEST_MOVES = (4, 0, 2, 6, 8, 1, 3, 5, 7)
-    print("Явыберу поле номер", end=" ")
+    print("Я выберу поле номер", end=" ")
     for move in legal_moves(board):
         board[move] = computer
         # если слудующим ходом может победить компьютер, выберем этот ход
