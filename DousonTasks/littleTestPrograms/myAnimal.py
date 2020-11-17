@@ -8,6 +8,10 @@ class Critter(object):
         self.hunger = hunger
         self.boredom = boredom
 
+    def __str__(self):
+        info = "Меня зовут {0}\nМое настроение = {1}\nСытость = {2}".format(self.name, self.boredom, self.hunger)
+        return info
+
     def __pas_time(self):
         self.hunger += 1
         self.boredom += 1
@@ -63,6 +67,8 @@ def main():
         # Выход
         if choice == "0":
             print("До свидания")
+        elif choice == "00":
+            print(crit)
         elif choice == "1":
             crit.talk()
         elif choice == "2":
