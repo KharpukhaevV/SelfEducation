@@ -24,7 +24,10 @@ def ask_number(question, low, high):
     """Просит ввести число из заданного диапазона"""
     response = None
     while response not in range(low, high):
-        response = int(input(question))
+        try:
+            response = int(input(question))
+        except ValueError:
+            print("Невернное значение")
     return response
 
 

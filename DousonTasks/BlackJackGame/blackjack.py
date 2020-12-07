@@ -69,22 +69,34 @@ class BJ_Hand(cards.Hand):
 class BJ_Player(BJ_Hand):
     """Игрок в Блек Джек"""
 
+    money = 500
+    bet = 0
+
     def is_hitting(self):
         response = games.ask_yes_no("\n" + self.name + ", будете брать еще карты? ")
         return response == "y"
 
+    def betting(self):
+        print("Ваш баланс ", self.money, end=". ")
+        while not int(self.bet) and self.bet == 0:
+            try:
+                self.bet = int(input("Введите вашу ставку: "))
+            except ValueError:
+                print("Невернное значение")
+
     def bust(self):
-        print(self.name, "перебрал")
         self.lose()
 
     def lose(self):
-        print(self.name, "проиграл")
+        self.money -= self.bet
+        print(self.name, "Вы проиграли. Баланс = ", self.money)
 
     def win(self):
-        print(self.name, "выиграл")
+        self.money += self.bet
+        print(self.name, "Вы выиграли. Баланс = ", self.money)
 
     def push(self):
-        print(self.name, "сыграл с компьютером в ничью")
+        print(self.name, "Вы сыграли с компьютером в ничью")
 
 
 class BJ_Dealer(BJ_Hand):
@@ -129,7 +141,16 @@ class BJ_Game:
             if player.is_busted():
                 player.bust()
 
+    def players_left(self):
+        if self.players:
+            return True
+        else:
+            return False
+
     def play(self):
+        # ставки
+        for player in self.players:
+            player.betting()
         # сдача всем по 2 карты
         self.deck.deal(self.players + [self.dealer], per_hand=2)
         self.dealer.flip_first_card()  # первая из карт, сданных дилеру, перворачивается руашкой вверх
@@ -142,6 +163,8 @@ class BJ_Game:
         self.dealer.flip_first_card()  # первая карта диллера раскрывается
         if not self.still_playing:
             # все игроки перебрали, покажем только руку дилера
+            for player in self.still_playing:
+                player.lose()
             print(self.dealer)
         else:
             #  сдача дополнительных карт дилеру
@@ -160,9 +183,19 @@ class BJ_Game:
                         player.lose()
                     else:
                         player.push()
+
+        for player in self.players:
+            if player.money == 0:
+                self.players.remove(player)
+
         for player in self.players:
             player.clear()
         self.dealer.clear()
+
+        if not self.deck.cards:
+            self.deck.populate()
+            self.deck.shuffle()
+            print("Обновили колоду")
 
 
 def main():
@@ -177,6 +210,9 @@ def main():
     again = None
     while again != "n":
         game.play()
+        if not game.players_left():
+            print("Игроков с деньгами не осталось")
+            break
         again = games.ask_yes_no("\nХотите сыграть еще раз? ")
 
 
